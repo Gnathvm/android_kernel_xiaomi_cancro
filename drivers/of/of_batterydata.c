@@ -1,5 +1,4 @@
 /* Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,7 +17,6 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/batterydata-lib.h>
-#include <asm/bootinfo.h>
 
 static int of_batterydata_read_lut(const struct device_node *np,
 			int max_cols, int max_rows, int *ncols, int *nrows,
@@ -202,22 +200,6 @@ do {									\
 	}								\
 } while (0)
 
-#define OF_XIAOMI_PROP_READ(property, qpnp_dt_property, node, rc, optional)	\
-do {									\
-	if (rc)								\
-		break;							\
-	rc = of_property_read_u32(node, "xiaomi," qpnp_dt_property,	\
-					&property);			\
-									\
-	if ((rc == -EINVAL) && optional) {				\
-		property = -EINVAL;					\
-		rc = 0;							\
-	} else if (rc) {						\
-		pr_err("Error reading " #qpnp_dt_property		\
-				" property rc = %d\n", rc);		\
-	}								\
-} while (0)
-
 static int of_batterydata_load_battery_data(struct device_node *node,
 				int best_id_kohm,
 				struct bms_battery_data *batt_data)
@@ -313,27 +295,12 @@ int of_batterydata_read_data(struct device_node *batterydata_container_node,
 		if (rc)
 			continue;
 
-		OF_XIAOMI_PROP_READ(batt_ver, "batt-version", node, rc, true);
-		if (get_hw_version_major() != batt_ver)
-			continue;
-
-		OF_PROP_READ(max_voltage_uv, "max-voltage-uv", node, rc, true);
-		if (get_hw_version_major() == 5) {
-			if (get_hw_version_minor() < 4) {
-				if (max_voltage_uv != 4350000)
-					continue;
-			} else {
-				if (max_voltage_uv != 4400000)
-					continue;
-			}
-		}
 		for (i = 0; i < batt_ids.num; i++) {
 			delta = abs(batt_ids.kohm[i] - batt_id_kohm);
 			if (delta < best_delta || !best_node) {
 				best_node = node;
 				best_delta = delta;
 				best_id_kohm = batt_ids.kohm[i];
-				best_batt_ver = batt_ver;
 			}
 		}
 	}
@@ -342,9 +309,6 @@ int of_batterydata_read_data(struct device_node *batterydata_container_node,
 		pr_err("No battery data found\n");
 		return -ENODATA;
 	}
-
-	printk(KERN_INFO "X%d battery:batt_id_kohm is %d,best_id_kohm is %d\n",
-		       best_batt_ver, batt_id_kohm, best_id_kohm);
 
 	return of_batterydata_load_battery_data(best_node,
 					best_id_kohm, batt_data);
