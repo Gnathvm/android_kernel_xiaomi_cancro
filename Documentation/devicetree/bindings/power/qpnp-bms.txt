@@ -22,10 +22,6 @@ Additionally, optional subnodes may be included:
 		register. If this node is included, then the BMS will store its
 		shutdown SOC in the specified register instead of the default
 		BMS data register.
-- qcom,battery-data : A phandle to a node containing the available batterydata
-		profiles. See the batterydata bindings documentation for more
-		details.
-
 Parent node required properties:
 - compatible : should be "qcom,qpnp-bms" for the BM driver.
 - qcom,r-sense-uohm : sensor resistance in in micro-ohms.
@@ -173,7 +169,6 @@ pm8941_bms: qcom,bms {
 	qcom,high-ocv-correction-limit-uv = <50>;
 	qcom,hold-soc-est = <3>;
 	qcom,tm-temp-margin = <5000>;
-	qcom,battery-data = <&mtp_batterydata>;
 	qcom,bms-vadc = <&pm8941_vadc>;
 	qcom,bms-iadc = <&pm8941_iadc>;
 	qcom,bms-adc_tm = <&pm8941_adc_tm>;
@@ -181,7 +176,6 @@ pm8941_bms: qcom,bms {
 	qcom,batt-pres-status@1208 {
 		reg = <0x1208 0x1>;
 	}
-
 	qcom,bms-iadc@3800 {
 		reg = <0x3800 0x100>;
 	};
