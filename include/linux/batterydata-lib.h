@@ -26,7 +26,6 @@
 
 #define MAX_SINGLE_LUT_COLS	20
 
-#define MAX_BATT_ID_NUM		4
 #define DEGC_SCALE		10
 
 struct single_row_lut {
@@ -72,11 +71,6 @@ struct pc_temp_ocv_lut {
 	int ocv[PC_TEMP_ROWS][PC_TEMP_COLS];
 };
 
-struct batt_ids {
-	int kohm[MAX_BATT_ID_NUM];
-	int num;
-};
-
 enum battery_type {
 	BATT_UNKNOWN = 0,
 	BATT_PALLADIUM,
@@ -107,7 +101,7 @@ enum battery_type {
  * @cutoff_uv:		cutoff voltage of the battery
  * @iterm_ua:		termination current of the battery when charging
  *			to 100%
- * @batt_id_kohm:	the best matched battery id resistor value
+ * @batt_id_kohm:	battery id resistor value
  */
 
 struct bms_battery_data {
